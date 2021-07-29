@@ -9,11 +9,13 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
+
+import com.blankj.utilcode.util.SizeUtils;
 import com.ydh.mylibrary.GuideView;
+import com.ydh.mylibrary.data.OnViewData;
 
 public class DrawView extends View {
     private String TAG = "  ";
@@ -21,6 +23,7 @@ public class DrawView extends View {
     private int shadowSize = 0;
     private int shapeType = 1;
     private int onViewX,onViewY,onViewWidth,onViewHeight;
+    private OnViewData[] viewDatas;
     public DrawView(Context context) {
         super(context);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -59,30 +62,44 @@ public class DrawView extends View {
         paint.setColor(0xa0000000);
         canvas.drawRect(0,0,width,height,paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        if(shapeType == GuideView.RECTANGLE){
-            if(shadowSize > 0){
-                paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
-                canvas.drawRect(-onViewWidth,onViewY,0,onViewY+onViewHeight,paint);
-            }else{
-                canvas.drawRect(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight,paint);
-            }
-        }else if(shapeType == GuideView.CIRCLE){
-            if(shadowSize > 0) {
-                int circleW = Math.max(onViewWidth, onViewHeight);
-                float radius = circleW / 2f;
-                paint.setShadowLayer(shadowSize,onViewX+circleW,0,0x00000000);
-                canvas.drawCircle(-radius, onViewY + onViewHeight / 2, radius, paint);
-            }else{
-                canvas.drawCircle(onViewX + onViewWidth / 2, onViewY + onViewHeight / 2, onViewWidth > onViewHeight ? onViewWidth / 2 : onViewHeight / 2, paint);
-            }
-        }else if(shapeType == GuideView.OVAL){
-            if(shadowSize > 0){
-                RectF rectF = new RectF(-onViewWidth,onViewY,0,onViewY+onViewHeight);
-                paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
-                canvas.drawOval(rectF,paint);
-            }else{
-                RectF rectF = new RectF(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight);
-                canvas.drawOval(rectF,paint);
+        for(int i=0;i<viewDatas.length;i++){
+            int[] location = new int[2];
+            viewDatas[i].getView().getLocationOnScreen(location);
+            onViewX = location[0]-viewDatas[i].getPaddingL();
+            onViewY = location[1]-viewDatas[i].getPaddingT();
+            onViewWidth = viewDatas[i].getView().getWidth()+viewDatas[i].getPaddingR()+viewDatas[i].getPaddingL();
+            onViewHeight = viewDatas[i].getView().getHeight()+viewDatas[i].getPaddingB()+viewDatas[i].getPaddingT();
+
+            if(shapeType == GuideView.RECTANGLE){
+                if(shadowSize > 0){
+                    paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
+//                    canvas.drawRect(-onViewWidth,onViewY,0,onViewY+onViewHeight,paint);
+                    RectF rectF = new RectF(-onViewWidth,onViewY,0,onViewY+onViewHeight);
+                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10),SizeUtils.dp2px(10),paint);
+
+                }else{
+//                    canvas.drawRect(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight,paint);
+                    RectF rectF = new RectF(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight);
+                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10),SizeUtils.dp2px(10),paint);
+                }
+            }else if(shapeType == GuideView.CIRCLE){
+                if(shadowSize > 0) {
+                    int circleW = Math.max(onViewWidth, onViewHeight);
+                    float radius = circleW / 2f;
+                    paint.setShadowLayer(shadowSize,onViewX+circleW,0,0x00000000);
+                    canvas.drawCircle(-radius, onViewY + onViewHeight / 2, radius, paint);
+                }else{
+                    canvas.drawCircle(onViewX + onViewWidth / 2, onViewY + onViewHeight / 2, onViewWidth > onViewHeight ? onViewWidth / 2 : onViewHeight / 2, paint);
+                }
+            }else if(shapeType == GuideView.OVAL){
+                if(shadowSize > 0){
+                    RectF rectF = new RectF(-onViewWidth,onViewY,0,onViewY+onViewHeight);
+                    paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
+                    canvas.drawOval(rectF,paint);
+                }else{
+                    RectF rectF = new RectF(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight);
+                    canvas.drawOval(rectF,paint);
+                }
             }
         }
         paint.setXfermode(null);
@@ -101,15 +118,12 @@ public class DrawView extends View {
         switch (mode){
             case MeasureSpec.AT_MOST: //最大取值
                 mySize = size;
-                Log.e(TAG," -- AT_MOST --");
                 break;
             case MeasureSpec.EXACTLY: //指定大小
                 mySize = size;
-                Log.e(TAG," -- EXACTLY --");
                 break;
             case MeasureSpec.UNSPECIFIED: //没有指定大小 listView 的 itemView 或者 ScrollView 的子View 这类超出屏幕范围带滚动的视图会出现
                 mySize = size; //默认大小
-                Log.e(TAG," -- UNSPECIFIED --");
                 break;
             default:
                 break;
@@ -121,6 +135,12 @@ public class DrawView extends View {
         this.onViewHeight = onViewHeight;
         this.onViewX = onViewX;
         this.onViewY = onViewY;
+        invalidate();
+    }
+
+    public void setOnViewInfos(OnViewData[] viewData){
+
+        this.viewDatas = viewData;
         invalidate();
     }
     public void setShadowSize(int size){
