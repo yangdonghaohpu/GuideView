@@ -13,6 +13,7 @@ public class ViewBuilder {
     ExplainView[] explainViews;
     ExplainView[] otherViews;
     int shadowSize = 0,shapeType = 1;
+    int backgroundColor = 0xa0000000;
     DismissCallback callback;
     String skipButtonText;
     int skipButtonGravity = Gravity.LEFT;
@@ -110,6 +111,11 @@ public class ViewBuilder {
 
     public ViewBuilder setShapeType(int type){
         this.shapeType = type;
+        return this;
+    }
+
+    public ViewBuilder setBgColor(int color){
+        this.backgroundColor = color;
         return this;
     }
 

@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.SizeUtils;
@@ -19,11 +20,13 @@ import com.ydh.mylibrary.data.OnViewData;
 
 public class DrawView extends View {
     private String TAG = "  ";
-    private int width,height;
+    private int width, height;
     private int shadowSize = 0;
     private int shapeType = 1;
-    private int onViewX,onViewY,onViewWidth,onViewHeight;
+    private int onViewX, onViewY, onViewWidth, onViewHeight;
     private OnViewData[] viewDatas;
+    private int backgroundColor = 0xa0000000;
+
     public DrawView(Context context) {
         super(context);
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -41,10 +44,10 @@ public class DrawView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        width = getSize(100,widthMeasureSpec);
-        height = getSize(100,heightMeasureSpec);
+        width = getSize(100, widthMeasureSpec);
+        height = getSize(100, heightMeasureSpec);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(width,height); //保存自身尺寸，要不然scrollView一类的父View没办法判断给宽高
+        setMeasuredDimension(width, height); //保存自身尺寸，要不然scrollView一类的父View没办法判断给宽高
     }
 
     @Override
@@ -59,46 +62,46 @@ public class DrawView extends View {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         setBackgroundColor(Color.TRANSPARENT);
-        paint.setColor(0xa0000000);
-        canvas.drawRect(0,0,width,height,paint);
+        paint.setColor(backgroundColor);
+        canvas.drawRect(0, 0, width, height, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        for(int i=0;i<viewDatas.length;i++){
+        for (int i = 0; i < viewDatas.length; i++) {
             int[] location = new int[2];
             viewDatas[i].getView().getLocationOnScreen(location);
-            onViewX = location[0]-viewDatas[i].getPaddingL();
-            onViewY = location[1]-viewDatas[i].getPaddingT();
-            onViewWidth = viewDatas[i].getView().getWidth()+viewDatas[i].getPaddingR()+viewDatas[i].getPaddingL();
-            onViewHeight = viewDatas[i].getView().getHeight()+viewDatas[i].getPaddingB()+viewDatas[i].getPaddingT();
+            onViewX = location[0] - viewDatas[i].getPaddingL();
+            onViewY = location[1] - viewDatas[i].getPaddingT();
+            onViewWidth = viewDatas[i].getView().getWidth() + viewDatas[i].getPaddingR() + viewDatas[i].getPaddingL();
+            onViewHeight = viewDatas[i].getView().getHeight() + viewDatas[i].getPaddingB() + viewDatas[i].getPaddingT();
 
-            if(shapeType == GuideView.RECTANGLE){
-                if(shadowSize > 0){
-                    paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
+            if (shapeType == GuideView.RECTANGLE) {
+                if (shadowSize > 0) {
+                    paint.setShadowLayer(shadowSize, onViewX + onViewWidth, 0, 0x00000000);
 //                    canvas.drawRect(-onViewWidth,onViewY,0,onViewY+onViewHeight,paint);
-                    RectF rectF = new RectF(-onViewWidth,onViewY,0,onViewY+onViewHeight);
-                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10),SizeUtils.dp2px(10),paint);
+                    RectF rectF = new RectF(-onViewWidth, onViewY, 0, onViewY + onViewHeight);
+                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10), SizeUtils.dp2px(10), paint);
 
-                }else{
+                } else {
 //                    canvas.drawRect(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight,paint);
-                    RectF rectF = new RectF(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight);
-                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10),SizeUtils.dp2px(10),paint);
+                    RectF rectF = new RectF(onViewX, onViewY, onViewX + onViewWidth, onViewY + onViewHeight);
+                    canvas.drawRoundRect(rectF, SizeUtils.dp2px(10), SizeUtils.dp2px(10), paint);
                 }
-            }else if(shapeType == GuideView.CIRCLE){
-                if(shadowSize > 0) {
+            } else if (shapeType == GuideView.CIRCLE) {
+                if (shadowSize > 0) {
                     int circleW = Math.max(onViewWidth, onViewHeight);
                     float radius = circleW / 2f;
-                    paint.setShadowLayer(shadowSize,onViewX+circleW,0,0x00000000);
+                    paint.setShadowLayer(shadowSize, onViewX + circleW, 0, 0x00000000);
                     canvas.drawCircle(-radius, onViewY + onViewHeight / 2, radius, paint);
-                }else{
+                } else {
                     canvas.drawCircle(onViewX + onViewWidth / 2, onViewY + onViewHeight / 2, onViewWidth > onViewHeight ? onViewWidth / 2 : onViewHeight / 2, paint);
                 }
-            }else if(shapeType == GuideView.OVAL){
-                if(shadowSize > 0){
-                    RectF rectF = new RectF(-onViewWidth,onViewY,0,onViewY+onViewHeight);
-                    paint.setShadowLayer(shadowSize,onViewX+onViewWidth,0,0x00000000);
-                    canvas.drawOval(rectF,paint);
-                }else{
-                    RectF rectF = new RectF(onViewX,onViewY,onViewX+onViewWidth,onViewY+onViewHeight);
-                    canvas.drawOval(rectF,paint);
+            } else if (shapeType == GuideView.OVAL) {
+                if (shadowSize > 0) {
+                    RectF rectF = new RectF(-onViewWidth, onViewY, 0, onViewY + onViewHeight);
+                    paint.setShadowLayer(shadowSize, onViewX + onViewWidth, 0, 0x00000000);
+                    canvas.drawOval(rectF, paint);
+                } else {
+                    RectF rectF = new RectF(onViewX, onViewY, onViewX + onViewWidth, onViewY + onViewHeight);
+                    canvas.drawOval(rectF, paint);
                 }
             }
         }
@@ -111,11 +114,11 @@ public class DrawView extends View {
         return super.onTouchEvent(event);
     }
 
-    private int getSize(int defaultSize, int measureSpec){
+    private int getSize(int defaultSize, int measureSpec) {
         int mySize = defaultSize;
         int mode = MeasureSpec.getMode(measureSpec);
         int size = MeasureSpec.getSize(measureSpec);
-        switch (mode){
+        switch (mode) {
             case MeasureSpec.AT_MOST: //最大取值
                 mySize = size;
                 break;
@@ -130,7 +133,8 @@ public class DrawView extends View {
         }
         return mySize;
     }
-    public void setOnViewInfo(int onViewX,int onViewY,int onViewWidth,int onViewHeight){
+
+    public void setOnViewInfo(int onViewX, int onViewY, int onViewWidth, int onViewHeight) {
         this.onViewWidth = onViewWidth;
         this.onViewHeight = onViewHeight;
         this.onViewX = onViewX;
@@ -138,15 +142,21 @@ public class DrawView extends View {
         invalidate();
     }
 
-    public void setOnViewInfos(OnViewData[] viewData){
+    public void setOnViewInfos(OnViewData[] viewData) {
 
         this.viewDatas = viewData;
         invalidate();
     }
-    public void setShadowSize(int size){
+
+    public void setShadowSize(int size) {
         this.shadowSize = size;
     }
-    public void setShapeType(int type){
+
+    public void setShapeType(int type) {
         this.shapeType = type;
+    }
+
+    public void setBgColor(int color) {
+        this.backgroundColor = color;
     }
 }

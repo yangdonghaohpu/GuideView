@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ScreenUtils;
@@ -22,8 +21,6 @@ import com.ydh.mylibrary.data.OnViewData;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ydh.mylibrary.data.LayoutIdData.LEFT;
 
 public class ViewContainer {
     private ViewBuilder viewBuilder;
@@ -61,6 +58,7 @@ public class ViewContainer {
                     if (viewBuilder.onViews[viewCount] != null) {
                         myView.setShadowSize(viewBuilder.shadowSize);
                         myView.setShapeType(viewBuilder.shapeType);
+                        myView.setBgColor(viewBuilder.backgroundColor);
                         setOnViewInfo(viewCount);
                     }
                 }
@@ -76,6 +74,7 @@ public class ViewContainer {
                     if (viewBuilder.onViewDatas[viewCount] != null) {
                         myView.setShadowSize(viewBuilder.shadowSize);
                         myView.setShapeType(viewBuilder.shapeType);
+                        myView.setBgColor(viewBuilder.backgroundColor);
                         setOnViewInfos(viewBuilder.onViewDatas[viewCount]);
                         addOtherLayout();
                         addSkipButton(viewBuilder.skipButtonText);

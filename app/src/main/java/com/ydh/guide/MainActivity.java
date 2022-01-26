@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 )
                 .setSkipButton("跳过")
                 .setShapeType(GuideView.RECTANGLE)
+//                .setBgColor(R.color.colorAccent)
                 .setShadowSize(20)
                 .setDismissCallback(new DismissCallback() {
                     @Override
